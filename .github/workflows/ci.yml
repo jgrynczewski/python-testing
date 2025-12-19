@@ -1,0 +1,63 @@
+name: CI Pipeline
+
+# Kiedy uruchamiać workflow
+on:
+  # Na każdy push do main i każdy pull request
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  test:
+    # System operacyjny
+    runs-on: ubuntu-latest
+
+    steps:
+    # Pobierz kod z repo
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # Zainstaluj Python
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    # Zainstaluj zależności
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest pytest-cov
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+    # Uruchom testy
+    - name: Run tests
+      run: |
+        cd ci_cd
+        python -m pytest test_calculator.py -v
+
+    # Sprawdź pokrycie kodu
+    - name: Run tests with coverage
+      run: |
+        cd ci_cd
+        python -m pytest test_calculator.py --cov=calculator --cov-report=term-missing
+
+    # Fail jeśli pokrycie < 80%
+    - name: Check coverage threshold
+      run: |
+        cd ci_cd
+        python -m pytest test_calculator.py --cov=calculator --cov-fail-under=80
+
+    # ++++ V3: POKRYCIE KODU Z HTML REPORTEM ++++
+    - name: Run tests with coverage
+      run: |
+        cd ci_cd
+        python -m pytest test_calculator.py --cov=calculator --cov-report=term-missing --cov-report=html
+
+    # ++++ V3: UPLOAD HTML COVERAGE JAKO ARTEFAKT ++++
+    - name: Upload coverage report
+      uses: actions/upload-artifact@v4
+      if: always()  # upload nawet jeśli testy failują
+      with:
+        name: coverage-report
+        path: ci_cd/htmlcov/
