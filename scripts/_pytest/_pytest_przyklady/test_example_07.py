@@ -1,8 +1,6 @@
 # Wbudowane fikstury pytest - capsys
 import sys
 
-import pytest
-
 
 def print_user_info(name, age):
     """Function that prints to stdout - we want to test this output"""
