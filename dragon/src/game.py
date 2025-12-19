@@ -16,6 +16,8 @@ Ustaw inicjalną pozycję smoka na x=50, y=100
 >>> dragon = Dragon('Wawelski', position_x=50, position_y=100)
 
 Pobierz aktualną pozycję
+>>> dragon.get_position()
+(50, 100)
 
 Ustaw nową pozycję smoka na x=10, y=20
 
@@ -57,11 +59,16 @@ class Dragon:
         self.health = randint(50, 100)
         self.name = name
 
+    def get_position(self) -> tuple[int, int]:
+        return self.position_x, self.position_y
+
 
 class DragonTest(unittest.TestCase):
+    def setUp(self):
+        self.dragon = Dragon("Wawelski")
+
     def test_init_name_positional(self):
-        dragon = Dragon("Wawelski")
-        self.assertEqual(dragon.name, "Wawelski")
+        self.assertEqual(self.dragon.name, "Wawelski")
 
     def test_init_name_keyword(self):
         with self.assertRaises(TypeError):
@@ -72,8 +79,7 @@ class DragonTest(unittest.TestCase):
             Dragon()  # noqa
 
     def test_health_init(self):
-        dragon = Dragon("Wawelski")
-        self.assertIn(dragon.health, range(50, 101))
+        self.assertIn(self.dragon.health, range(50, 101))
 
     def test_init_position_keyword(self):
         dragon = Dragon("Name", position_x=1, position_y=2)
@@ -85,3 +91,6 @@ class DragonTest(unittest.TestCase):
             Dragon('Name', 1, y=2)  # noqa
         with self.assertRaises(TypeError):
             Dragon('Name', 1, 2)  # noqa
+
+    def test_get_position(self):
+        self.assertTupleEqual(self.dragon.get_position(), (0, 0))
