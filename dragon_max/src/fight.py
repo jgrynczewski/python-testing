@@ -1,4 +1,4 @@
-from dragon.src.test_game import Dragon
+from dragon_max.src.test_game import Dragon
 
 if __name__ == "__main__":
 
